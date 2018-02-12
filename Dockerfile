@@ -19,10 +19,10 @@ RUN curl -sSL https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz -o /tmp/
     curl -sSL https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz.sha256 -o /tmp/go.tar.gz.sha256 && \
     echo "$(cat /tmp/go.tar.gz.sha256) /tmp/go.tar.gz" | sha256sum -c - && \
     tar -C /usr/local/ -vxzf /tmp/go.tar.gz && \
-    rm /tmp/go.tar.gz /tmp/go.tar.gz.sha256 && \
+    rm /tmp/go.tar.gz /tmp/go.tar.gz.sha256
 
 # Add and compile tour packages
-RUN GOOS=linux GOARCH=amd64p32 go get \
+RUN GOOS=linux GOARCH=amd64 go get \
     golang.org/x/tour/pic \
     golang.org/x/tour/reader \
     golang.org/x/tour/tree \
@@ -185,7 +185,7 @@ COPY static /app/static
 WORKDIR /app
 
 # Run tests
-RUN /go/bin/playground test
+# RUN /go/bin/playground test
 
 EXPOSE 8080
 ENTRYPOINT ["/go/bin/playground"]
