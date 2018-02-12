@@ -1,8 +1,4 @@
-# Copyright 2017 The Go Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
 FROM debian:jessie
-LABEL maintainer "golang-dev@googlegroups.com"
 
 ENV GOPATH /go
 ENV PATH /usr/local/go/bin:$GOPATH/bin:$PATH

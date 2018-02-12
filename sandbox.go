@@ -1,11 +1,3 @@
-// Copyright 2014 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
-// TODO(andybons): add logging
-// TODO(andybons): restrict memory use
-// TODO(andybons): send exit code to user
-
 package main
 
 import (
