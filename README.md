@@ -20,6 +20,8 @@ docker run --rm -d -p 8080:8080 playground
 cat /path/to/code.go | go run client.go | curl --data @- localhost:8080/compile
 ```
 
+* If you're using `docker-machine`, replace `localhost` with the IP of your Docker server (typically `192.168.99.100`)
+
 # Deployment
 
 ```
