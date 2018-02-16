@@ -84,7 +84,7 @@ func (s *server) compileAndRun(req *request) (*response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating temp directory: %v", err)
 	}
-	// defer os.RemoveAll(tmpDir)
+	defer os.RemoveAll(tmpDir)
 
 	in := filepath.Join(tmpDir, "main.go")
 	if err := ioutil.WriteFile(in, []byte(req.Body), 0400); err != nil {
