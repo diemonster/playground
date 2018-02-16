@@ -84,7 +84,7 @@ func (s *server) compileAndRun(req *request) (*response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating temp directory: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	// defer os.RemoveAll(tmpDir)
 
 	in := filepath.Join(tmpDir, "main.go")
 	if err := ioutil.WriteFile(in, []byte(req.Body), 0400); err != nil {
@@ -99,6 +99,17 @@ func (s *server) compileAndRun(req *request) (*response, error) {
 	}
 
 	exe := filepath.Join(tmpDir, "a.out")
+
+	// grab dependencies via 'go get'
+	deps := exec.Command("go", "get", ".")
+	deps.Env = append(os.Environ())
+	deps.Dir = tmpDir
+	out, err := deps.CombinedOutput()
+	if err != nil {
+		log.Printf("Error fetching dependencies: %s, %v", string(out), err)
+	}
+
+	// Build from source
 	cmd := exec.Command("go", "build", "-o", exe, in)
 	cmd.Env = []string{"GOOS=linux", "GOARCH=amd64", "GOPATH=" + os.Getenv("GOPATH")}
 	if out, err := cmd.CombinedOutput(); err != nil {
@@ -119,6 +130,7 @@ func (s *server) compileAndRun(req *request) (*response, error) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), maxRunTime)
 	defer cancel()
+
 	cmd = exec.CommandContext(ctx, "/bin/sh", "-c", exe)
 	rec := new(Recorder)
 	cmd.Stdout = rec.Stdout()

@@ -1,6 +1,7 @@
 FROM debian:jessie
 
 ENV GOPATH /go
+ENV GOBIN /go/bin
 ENV PATH /usr/local/go/bin:$GOPATH/bin:$PATH
 ENV GOROOT_BOOTSTRAP /usr/local/gobootstrap
 ENV GO_VERSION 1.9.3
@@ -166,8 +167,6 @@ RUN go install cloud.google.com/go/compute/metadata \
 	google.golang.org/grpc/tap \
 	google.golang.org/grpc/transport
 # END deps
-
-RUN apt-get purge -y --auto-remove ${BUILD_DEPS}
 
 # Add and compile playground daemon
 COPY . /go/src/playground/
