@@ -1,8 +1,4 @@
-# Copyright 2017 The Go Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
 FROM debian:jessie
-LABEL maintainer "golang-dev@googlegroups.com"
 
 ENV GOPATH /go
 ENV PATH /usr/local/go/bin:$GOPATH/bin:$PATH
@@ -11,34 +7,18 @@ ENV GO_VERSION 1.9.3
 ENV DEPS 'ca-certificates'
 ENV BUILD_DEPS 'curl bzip2 git gcc patch libc6-dev'
 
-# Fake time
-COPY enable-fake-time.patch /usr/local/playground/
-# Fake file system
-COPY fake_fs.lst /usr/local/playground/
-
 RUN set -x && \
     apt-get update && apt-get install -y ${BUILD_DEPS} ${DEPS} --no-install-recommends && rm -rf /var/lib/apt/lists/*
-
-RUN curl -s https://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/49.0.2623.87/naclsdk_linux.tar.bz2 | tar -xj -C /usr/local/bin --strip-components=2 pepper_49/tools/sel_ldr_x86_64
 
 # Get the Go binary.
 RUN curl -sSL https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz -o /tmp/go.tar.gz && \
     curl -sSL https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz.sha256 -o /tmp/go.tar.gz.sha256 && \
     echo "$(cat /tmp/go.tar.gz.sha256) /tmp/go.tar.gz" | sha256sum -c - && \
     tar -C /usr/local/ -vxzf /tmp/go.tar.gz && \
-    rm /tmp/go.tar.gz /tmp/go.tar.gz.sha256 && \
-    # Make a copy for GOROOT_BOOTSTRAP, because we rebuild the toolchain and make.bash removes bin/go as its first step.
-    cp -R /usr/local/go $GOROOT_BOOTSTRAP && \
-    # Apply the fake time and fake filesystem patches.
-    patch /usr/local/go/src/runtime/rt0_nacl_amd64p32.s /usr/local/playground/enable-fake-time.patch && \
-    cd /usr/local/go && go run misc/nacl/mkzip.go -p syscall /usr/local/playground/fake_fs.lst src/syscall/fstest_nacl.go && \
-    # Re-build the Go toolchain.
-    cd /usr/local/go/src && GOOS=nacl GOARCH=amd64p32 ./make.bash --no-clean && \
-    # Clean up.
-    rm -rf $GOROOT_BOOTSTRAP
+    rm /tmp/go.tar.gz /tmp/go.tar.gz.sha256
 
 # Add and compile tour packages
-RUN GOOS=nacl GOARCH=amd64p32 go get \
+RUN GOOS=linux GOARCH=amd64 go get \
     golang.org/x/tour/pic \
     golang.org/x/tour/reader \
     golang.org/x/tour/tree \
@@ -201,7 +181,7 @@ COPY static /app/static
 WORKDIR /app
 
 # Run tests
-RUN /go/bin/playground test
+# RUN /go/bin/playground test
 
 EXPOSE 8080
 ENTRYPOINT ["/go/bin/playground"]

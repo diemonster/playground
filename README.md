@@ -1,9 +1,14 @@
-# playground
+# Go Playground
 
-This subrepository holds the source for the Go playground:
-https://play.golang.org/
+Hackweek refactor of Go Playground. 
 
-To submit changes to this repository, see http://golang.org/doc/contribute.html.
+## Goals
+
+* Allow Third-Party Dependencies in Go Playground
+* Disable network/filesystem controls (aka NaCl)
+* Adapt deployment for Layer0, refactor data persistence to mongodb
+* Add Auth0 Frontend for authentication (not done)
+* Use internal domain name (not done)
 
 ## Building
 
@@ -20,12 +25,4 @@ docker run --rm -d -p 8080:8080 playground
 cat /path/to/code.go | go run client.go | curl --data @- localhost:8080/compile
 ```
 
-# Deployment
-
-```
-gcloud --project=golang-org --account=person@example.com app deploy app.yaml
-```
-
-# Contributing
-
-To submit changes to this repository, see http://golang.org/doc/contribute.html.
+* If you're using `docker-machine`, replace `localhost` with the IP of your Docker server (typically `192.168.99.100`)

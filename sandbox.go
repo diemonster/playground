@@ -1,11 +1,3 @@
-// Copyright 2014 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
-// TODO(andybons): add logging
-// TODO(andybons): restrict memory use
-// TODO(andybons): send exit code to user
-
 package main
 
 import (
@@ -108,7 +100,7 @@ func (s *server) compileAndRun(req *request) (*response, error) {
 
 	exe := filepath.Join(tmpDir, "a.out")
 	cmd := exec.Command("go", "build", "-o", exe, in)
-	cmd.Env = []string{"GOOS=nacl", "GOARCH=amd64p32", "GOPATH=" + os.Getenv("GOPATH")}
+	cmd.Env = []string{"GOOS=linux", "GOARCH=amd64", "GOPATH=" + os.Getenv("GOPATH")}
 	if out, err := cmd.CombinedOutput(); err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
 			// Return compile errors to the user.
@@ -127,7 +119,7 @@ func (s *server) compileAndRun(req *request) (*response, error) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), maxRunTime)
 	defer cancel()
-	cmd = exec.CommandContext(ctx, "sel_ldr_x86_64", "-l", "/dev/null", "-S", "-e", exe)
+	cmd = exec.CommandContext(ctx, "/bin/sh", "-c", exe)
 	rec := new(Recorder)
 	cmd.Stdout = rec.Stdout()
 	cmd.Stderr = rec.Stderr()
